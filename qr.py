@@ -1,58 +1,111 @@
-'''Un generador de códigos QR en Python.'''
+'''Un generador de códigos QR en Python adaptado para entorno Web (Render).'''
 
+from flask import Flask, request, send_file, render_template_string
 import qrcode
-try:
-    from PIL import Image
-except ImportError:
-    print("Error: PIL/Pillow no está instalado. Instálalo con: pip install Pillow")
-import tkinter as tk
-from tkinter import filedialog, messagebox
+import io
 
-class QRCodeGenerator:
- 
-    def __init__(self, master):
-        self.master = master
-        self.master.title("Generador de Códigos QR")
-        self.master.geometry("600x400")
+app = Flask(__name__)
 
-        # Etiqueta y entrada para el texto del código QR
-        self.label = tk.Label(master, text="Texto para el código QR:")
-        self.label.pack(pady=10)
+# Interfaz Web que reemplaza las ventanas de Tkinter
+INTERFAZ_HTML = '''
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Códigos QR</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            text-align: center; 
+            margin-top: 60px; 
+            background-color: #f4f7f6; 
+            color: #333;
+        }
+        .contenedor {
+            background: white; 
+            padding: 30px; 
+            display: inline-block; 
+            border-radius: 8px; 
+            box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+            max-width: 500px;
+            width: 90%;
+        }
+        h2 { margin-bottom: 20px; color: #028090; }
+        label { display: block; margin-bottom: 8px; font-weight: bold; }
+        input[type="text"] { 
+            width: 100%; 
+            padding: 12px; 
+            margin-bottom: 20px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button { 
+            width: 100%;
+            padding: 12px; 
+            background-color: #00a896; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            font-size: 16px;
+            cursor: pointer; 
+            font-weight: bold;
+        }
+        button:hover { background-color: #028090; }
+    </style>
+</head>
+<body>
+    <div class="contenedor">
+        <h2>Generador de Códigos QR</h2>
+        <form action="/generar" method="POST">
+            <label for="texto">Texto para el código QR:</label>
+            <input type="text" id="texto" name="texto" placeholder="Ingresá el texto o enlace aquí..." required>
+            <button type="submit">Generar Código QR</button>
+        </form>
+    </div>
+</body>
+</html>
+'''
 
-        self.text_entry = tk.Entry(master, width=50)
-        self.text_entry.pack(pady=5)
+@app.route('/')
+def home():
+    # Devuelve la interfaz de entrada (Equivalente al __init__ de tu Tkinter)
+    return render_template_string(INTERFAZ_HTML)
 
-        # Botón para generar el código QR
-        self.generate_button = tk.Button(master, text="Generar Código QR", command=self.generate_qr)
-        self.generate_button.pack(pady=20)
+@app.route('/generar', methods=['POST'])
+def generate_qr():
+    # Reemplaza a self.text_entry.get()
+    text = request.form.get('texto')
+    
+    if not text:
+        return "Por favor, ingresa un texto válido.", 400
 
-    def generate_qr(self):
-        text = self.text_entry.get()
-        if not text:
-            messagebox.showerror("Error", "Por favor, ingresa un texto para generar el código QR.")
-            return
+    # Mantenemos exactamente tu misma lógica de configuración del QR
+    qr = qrcode.QRCode(
+        version=1,
+        error_correction=qrcode.constants.ERROR_CORRECT_L,
+        box_size=10,
+        border=4,
+    )
+    qr.add_data(text)
+    qr.make(fit=True)
 
-        # Generar el código QR
-        qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_L,
-            box_size=10,
-            border=4,
-        )
-        qr.add_data(text)
-        qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
 
-        img = qr.make_image(fill_color="black", back_color="white")
+    # Guardar en memoria (BytesIO) en lugar de pedir una ruta física con filedialog
+    img_buffer = io.BytesIO()
+    img.save(img_buffer, format='PNG')
+    img_buffer.seek(0)
+    
+    # Envía el archivo para que el navegador lo descargue automáticamente como 'codigo_qr.png'
+    return send_file(
+        img_buffer, 
+        mimetype='image/png', 
+        as_attachment=True, 
+        download_name='codigo_qr.png'
+    )
 
-        # Guardar la imagen del código QR
-        file_path = filedialog.asksaveasfilename(defaultextension=".png",
-                                                 filetypes=[("PNG files", "*.png"), ("All files", "*.*")])
-        if file_path:
-            img.save(file_path)
-            messagebox.showinfo("Éxito", f"Código QR guardado en: {file_path}")
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = QRCodeGenerator(root)
-    root.mainloop()
+if __name__ == '__main__':
+    # Para pruebas locales en tu PC
+    app.run(debug=True)
