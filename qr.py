@@ -1,6 +1,4 @@
-'''Un generador de códigos QR en Python es un proyecto práctico y divertido que te permitirá desarrollar tus habilidades en el 
-desarrollo de interfaces gráficas de usuario (GUI) y el procesamiento de imágenes. 
-Utilizando bibliotecas como qrcode, Tkinter y Pillow, crearás una aplicación para generar códigos QR en pocos clics.'''
+'''Un generador de códigos QR en Python.'''
 
 import qrcode
 try:
