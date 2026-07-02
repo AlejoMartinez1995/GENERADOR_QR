@@ -6,7 +6,7 @@ import io
 
 app = Flask(__name__)
 
-# Interfaz Web que reemplaza las ventanas de Tkinter
+# Interfaz Web
 INTERFAZ_HTML = '''
 <!DOCTYPE html>
 <html lang="es">
