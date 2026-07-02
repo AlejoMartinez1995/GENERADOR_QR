@@ -70,7 +70,7 @@ INTERFAZ_HTML = '''
 
 @app.route('/')
 def home():
-    # Devuelve la interfaz de entrada (Equivalente al __init__ de tu Tkinter)
+    # Devuelve la interfaz de entrada
     return render_template_string(INTERFAZ_HTML)
 
 @app.route('/generar', methods=['POST'])
@@ -81,7 +81,6 @@ def generate_qr():
     if not text:
         return "Por favor, ingresa un texto válido.", 400
 
-    # Mantenemos exactamente tu misma lógica de configuración del QR
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
