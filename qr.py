@@ -7,7 +7,11 @@ import base64
 
 app = Flask(__name__)
 
+<<<<<<< HEAD
 # Interfaz Web Premium (Tema Oscuro con Glassmorphism)
+=======
+# Interfaz Web
+>>>>>>> 6f9d91d3b55e8df39f994c2221584a985d0611b9
 INTERFAZ_HTML = '''
 <!DOCTYPE html>
 <html lang="es">
@@ -403,6 +407,10 @@ INTERFAZ_HTML = '''
 
 @app.route('/')
 def home():
+<<<<<<< HEAD
+=======
+    # Devuelve la interfaz de entrada
+>>>>>>> 6f9d91d3b55e8df39f994c2221584a985d0611b9
     return render_template_string(INTERFAZ_HTML)
 
 @app.route('/generar', methods=['POST'])
@@ -461,4 +469,9 @@ def generate_qr():
         )
 
 if __name__ == '__main__':
+<<<<<<< HEAD
     app.run(debug=True)
+=======
+    # Para pruebas locales en tu PC
+    app.run(debug=True)
+>>>>>>> 6f9d91d3b55e8df39f994c2221584a985d0611b9
