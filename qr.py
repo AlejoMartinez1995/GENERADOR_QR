@@ -14,7 +14,7 @@ INTERFAZ_HTML = '''
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="../icono/LOGO.png" type="image/png">
+    <link rel="icon" href="{{ url_for('static', filename='mi_icono.ico') }}" type="image/x-icon">
     <title>Generador de Códigos QR Premium</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
